@@ -16,13 +16,21 @@ public class GameController : MonoBehaviour
     public Text restartText;
     public Text gameOverText;
     public Text winText;
+    public Text timeUpText;
     public AudioSource winMusic;
     public AudioSource loseMusic;
     public AudioSource BGM;
+    public Collider playerCollider;
+    public Collider boltCollider;
+
 
     private bool gameOver;
     private bool restart;
     private int score;
+    float currentTime = 0f;
+    float startingTime = 15f;
+    [SerializeField] Text countdownText;
+
 
     void Start()
     {
@@ -30,10 +38,14 @@ public class GameController : MonoBehaviour
         restart = false;
         restartText.text = "";
         gameOverText.text = "";
+        timeUpText.text = "";
         winText.text = "";
         score = 0;
         UpdateScore();
         StartCoroutine(SpawnWaves());
+        currentTime = startingTime;
+        playerCollider.enabled = true;
+        boltCollider.enabled = true;
     }
 
     private void Update()
@@ -49,6 +61,21 @@ public class GameController : MonoBehaviour
             {
                 SceneManager.LoadScene("Space Shooter"); // or whatever the name of your scene is
             }
+        }
+
+       
+       currentTime -= 1 * Time.deltaTime;
+       countdownText.text = currentTime.ToString("0");
+
+        if (currentTime <= 0)
+        {
+            currentTime = 0;
+            gameOver = true;
+            restart = true;
+            timeUpText.text = "Time's up!";
+            playerCollider.enabled = false;
+            boltCollider.enabled = false; 
+            BGM.Stop();
         }
 
     }
@@ -68,6 +95,7 @@ public class GameController : MonoBehaviour
                 Instantiate(hazard, spawnPosition, spawnRotation);
                 yield return new WaitForSeconds(spawnWait);
             }
+
             yield return new WaitForSeconds(waveWait);
 
             if (gameOver)
@@ -88,17 +116,21 @@ public class GameController : MonoBehaviour
     void UpdateScore()
     {
         scoreText.text = "Points: " + score;
-        if (score >= 100)
+        if (score == 100 | score == 105 | score == 110 | score == 115)
         {
             winText.text = "You win! Game Created by Jason Ajucum!";
             gameOver = true;
             restart = true;
             BGM.Stop();
             winMusic.Play();
+            playerCollider.enabled = false;
+            boltCollider.enabled = false;
+            GameObject.Find("Background").GetComponent<BG_Scroller>().scrollSpeed = -30f;
+
         }
     }
 
-   
+
     public void GameOver()
     {
         gameOverText.text = "Game Over! Game Made by Jason Ajucum!";
@@ -106,5 +138,10 @@ public class GameController : MonoBehaviour
         restart = true;
         loseMusic.Play();
         BGM.Stop();
+        boltCollider.enabled = false;
     }
+
+
 }
+
+
