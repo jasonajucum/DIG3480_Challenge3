@@ -16,6 +16,9 @@ public class GameController : MonoBehaviour
     public Text restartText;
     public Text gameOverText;
     public Text winText;
+    public AudioSource winMusic;
+    public AudioSource loseMusic;
+    public AudioSource BGM;
 
     private bool gameOver;
     private bool restart;
@@ -47,6 +50,7 @@ public class GameController : MonoBehaviour
                 SceneManager.LoadScene("Space Shooter"); // or whatever the name of your scene is
             }
         }
+
     }
 
 
@@ -89,11 +93,18 @@ public class GameController : MonoBehaviour
             winText.text = "You win! Game Created by Jason Ajucum!";
             gameOver = true;
             restart = true;
+            BGM.Stop();
+            winMusic.Play();
         }
     }
+
+   
     public void GameOver()
     {
         gameOverText.text = "Game Over! Game Made by Jason Ajucum!";
         gameOver = true;
+        restart = true;
+        loseMusic.Play();
+        BGM.Stop();
     }
 }
